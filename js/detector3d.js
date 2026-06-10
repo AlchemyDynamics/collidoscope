@@ -137,7 +137,12 @@ const Detector3D = (() => {
   /* ---------- public: init ---------- */
   function init(canvas) {
     canvasEl = canvas;
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    } catch (e) {
+      // some configurations refuse antialiased contexts — try the modest path
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+    }
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
 
     scene = new THREE.Scene();

@@ -465,3 +465,35 @@ input[type="range"]::-moz-range-thumb {
   .topstats { gap: 14px; }
   .dex-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* NO-WEBGL FALLBACK (Lockdown Mode, old GPUs) */
+.webgl-fallback {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 28px 34px; overflow-y: auto;
+  background: radial-gradient(ellipse at center, rgba(10, 15, 36, 0.96), rgba(4, 5, 13, 0.98));
+  font-size: 0.95rem; line-height: 1.55; color: var(--text);
+}
+.webgl-fallback h3 {
+  font-family: var(--font-display); font-size: 1.05rem; letter-spacing: 0.08em;
+  color: var(--gold); margin-bottom: 10px;
+}
+.webgl-fallback p { margin-bottom: 10px; }
+.webgl-fallback .wf-fix { margin-bottom: 4px; }
+.webgl-fallback ul { margin: 0 0 10px 20px; }
+.webgl-fallback li { margin-bottom: 6px; color: var(--text-dim); }
+.webgl-fallback li b, .webgl-fallback li i { color: var(--text); }
+.webgl-fallback .wf-tech {
+  font-size: 0.72rem; color: #475569; word-break: break-word; margin-bottom: 0;
+}
+.event-report .rep-chips {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.event-report .chip {
+  min-width: 34px; height: 30px; padding: 0 8px;
+  background: rgba(15, 23, 42, 0.9); border: 1px solid; border-radius: 8px;
+  color: #cbd5e1; font-family: var(--font-display); font-size: 0.85rem;
+  cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.event-report .chip:not(:disabled):hover { transform: scale(1.12); box-shadow: 0 0 10px rgba(125, 211, 252, 0.35); }
+.event-report .chip:disabled { cursor: default; opacity: 0.95; }

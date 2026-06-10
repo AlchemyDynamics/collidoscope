@@ -22,6 +22,7 @@
 
   let currentEvent = null;
   let firing = false;
+  let no3D = false;   // WebGL unavailable (Lockdown Mode, old GPU…) — game stays playable
   let settings = { sqrtS: 1, lumi: 0.5, bField: 3.8 };
 
   /* ---------------- dom ---------------- */
@@ -172,7 +173,14 @@
         html += `<span class="rep-line rep-hot">📡 Unusual signature in the data — investigate!</span>`;
       }
     }
-    html += `<span class="rep-line"><em>Rotate the detector and click every ? marker.</em></span>`;
+    if (no3D) {
+      html += `<span class="rep-line"><em>Tap each ? to identify the particle:</em></span>`;
+      html += `<span class="rep-chips">` + ev.particles.map((p, i) =>
+        `<button class="chip" data-pidx="${i}" style="border-color:${PARTICLES[p.species].color}">?</button>`
+      ).join('') + `</span>`;
+    } else {
+      html += `<span class="rep-line"><em>Rotate the detector and click every ? marker.</em></span>`;
+    }
     $('event-report').innerHTML = html;
   }
 
@@ -185,7 +193,7 @@
 
     const sp = PARTICLES[p.species];
     SFX.scan();
-    Detector3D.resolveMarker(marker, sp.symbol.replace(/[⁺⁻⁰±]/g, ''), sp.color);
+    if (marker) { try { Detector3D.resolveMarker(marker, sp.symbol.replace(/[⁺⁻⁰±]/g, ''), sp.color); } catch (e) {} }
 
     state.seenCounts[p.species] = (state.seenCounts[p.species] || 0) + 1;
 
@@ -486,6 +494,21 @@
       }
     });
 
+    // no-3D fallback: identify particles from chips in the event report
+    $('event-report').addEventListener('click', e => {
+      const b = e.target.closest('[data-pidx]');
+      if (!b || b.disabled || !currentEvent) return;
+      const idx = +b.dataset.pidx;
+      onParticleClicked(idx, null);
+      const p = currentEvent.particles[idx];
+      if (p) {
+        const sp = PARTICLES[p.species];
+        b.textContent = sp.symbol;
+        b.style.color = sp.color;
+        b.disabled = true;
+      }
+    });
+
     document.querySelectorAll('.dex-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.dex-tab').forEach(t => t.classList.remove('active'));
@@ -509,7 +532,25 @@
     Detector3D.init($('scene3d'));
     Detector3D.onParticleClick(onParticleClicked);
   } catch (e) {
-    hudStatus.textContent = '⚠️ 3D VIEW UNAVAILABLE — ' + (e && e.message ? e.message : 'WebGL error');
+    no3D = true;
+    hudStatus.textContent = '⚠️ 2D MODE — IDENTIFY PARTICLES IN THE EVENT REPORT';
+    $('viewport-hint').classList.add('faded');
+    document.getElementById('viewport').insertAdjacentHTML('beforeend', `
+      <div class="webgl-fallback">
+        <h3>🔭 3D detector view unavailable</h3>
+        <p>This browser has <b>WebGL turned off</b>, so the 3D event display can't draw.
+        <b>The game still works</b> — fire the beams and identify particles right in the
+        Control Room's event report.</p>
+        <p class="wf-fix"><b>To get the full 3D view in Safari:</b></p>
+        <ul>
+          <li>If <b>Lockdown Mode</b> is on: click the page-settings (<b>aA</b> or puzzle) icon
+              in the address bar → <i>Website Settings</i> → turn Lockdown Mode <b>off for this
+              website only</b> — your passwords and other sites are not affected.</li>
+          <li>Older Safari: <i>Safari → Settings → Websites → WebGL</i> → set this site to <b>Allow</b>.</li>
+          <li>Or open this page in Chrome, Firefox, or Edge.</li>
+        </ul>
+        <p class="wf-tech">${(e && e.message ? e.message : 'WebGL error')} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '')}</p>
+      </div>`);
   }
   refreshStats();
   renderDex();
