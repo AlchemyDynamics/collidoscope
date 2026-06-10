@@ -104,5 +104,13 @@ const SFX = (() => {
   function setMuted(v) { muted = v; }
   function isMuted() { return muted; }
 
-  return { charge, boom, click, scan, discover, legendary, achievement, setMuted, isMuted };
+  // sound is garnish, never load-bearing: a WebAudio failure (old Safari,
+  // blocked autoplay, no audio device) must never interrupt gameplay
+  const safe = fn => (...a) => { try { return fn(...a); } catch (e) { muted = true; } };
+
+  return {
+    charge: safe(charge), boom: safe(boom), click: safe(click), scan: safe(scan),
+    discover: safe(discover), legendary: safe(legendary), achievement: safe(achievement),
+    setMuted, isMuted,
+  };
 })();

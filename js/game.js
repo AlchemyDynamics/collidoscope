@@ -110,9 +110,12 @@
   }
 
   /* ---------------- fire sequence ---------------- */
+  let collisionPending = false;
+
   function fire() {
     if (firing) return;
     firing = true;
+    collisionPending = true;
     fireBtn.disabled = true;
     fireBtn.classList.add('charging');
     fireBtn.querySelector('.fire-label').textContent = '⚡ CHARGING…';
@@ -120,12 +123,16 @@
     hudStatus.classList.add('busy');
     $('viewport-hint').classList.add('faded');
 
-    Detector3D.clearEvent();
+    try { Detector3D.clearEvent(); } catch (e) { /* 3D optional */ }
     SFX.charge(2.1);
-    Detector3D.playBeams(2.2, onCollide);
+    try { Detector3D.playBeams(2.2, onCollide); } catch (e) { /* watchdog covers it */ }
+    // watchdog: the collision must land even if the 3D beam animation stalls
+    setTimeout(onCollide, 2700);
   }
 
   function onCollide() {
+    if (!collisionPending) return;
+    collisionPending = false;
     SFX.boom();
     state.collisions++;
     unlock('firstfire');
@@ -139,7 +146,7 @@
     }
 
     setTimeout(() => {
-      Detector3D.renderEvent(currentEvent, settings.bField);
+      try { Detector3D.renderEvent(currentEvent, settings.bField); } catch (e) { /* report still lands */ }
       reportEvent(currentEvent);
       hudStatus.textContent = 'EVENT RECORDED — CLICK ? TO IDENTIFY';
       hudStatus.classList.remove('busy');
@@ -464,7 +471,7 @@
       SFX.setMuted(!SFX.isMuted());
       $('btn-mute').textContent = SFX.isMuted() ? '🔇' : '🔊';
     });
-    $('btn-cam-reset').addEventListener('click', () => Detector3D.resetCamera());
+    $('btn-cam-reset').addEventListener('click', () => { try { Detector3D.resetCamera(); } catch (e) {} });
     $('disco-close').addEventListener('click', () => { SFX.click(); closeModals(); });
 
     document.addEventListener('click', e => {
@@ -498,9 +505,18 @@
   initUI();
   sizeConfetti();
   confettiLoop();
-  Detector3D.init($('scene3d'));
-  Detector3D.onParticleClick(onParticleClicked);
+  try {
+    Detector3D.init($('scene3d'));
+    Detector3D.onParticleClick(onParticleClicked);
+  } catch (e) {
+    hudStatus.textContent = '⚠️ 3D VIEW UNAVAILABLE — ' + (e && e.message ? e.message : 'WebGL error');
+  }
   refreshStats();
   renderDex();
   updateHiggsPanel();
+
+  // surface unexpected errors so remote players can report them
+  window.addEventListener('error', e => {
+    toast(`⚠️ <b>Glitch in the detector</b><small>${e.message || 'unknown error'}</small>`);
+  });
 })();

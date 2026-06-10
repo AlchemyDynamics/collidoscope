@@ -396,6 +396,12 @@ const Detector3D = (() => {
   /* ---------- main loop ---------- */
   let lastT = 0;
   function loop(t) {
+    // schedule the next frame FIRST — an exception below must never kill the loop
+    requestAnimationFrame(loop);
+    try { tick(t); } catch (e) { /* keep animating */ }
+  }
+
+  function tick(t) {
     const dt = Math.min(0.05, (t - lastT) / 1000);
     lastT = t;
     clock.t += dt;
@@ -450,7 +456,8 @@ const Detector3D = (() => {
         flash();
         const cb = beamAnim.onCollide;
         beamAnim = null;
-        if (cb) cb();
+        // isolate the game callback — its errors must not poison the render loop
+        if (cb) { try { cb(); } catch (e) { /* game layer handles fallback */ } }
       }
     }
 
@@ -458,7 +465,6 @@ const Detector3D = (() => {
 
     controls.update();
     renderer.render(scene, camera);
-    requestAnimationFrame(loop);
   }
 
   function setAutoRotate(v) { controls.autoRotate = v; }

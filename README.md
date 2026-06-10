@@ -8,8 +8,8 @@ crank the beam energy, squeeze the luminosity, fire the beams, and identify
 the particles spraying through your 3D detector — logging every species in
 your **Particle-Dex**, all the way to the legendary **Higgs boson**.
 
-🎮 **Play it:** open `index.html` in any modern browser (internet required for
-Three.js + fonts), or visit the GitHub Pages site.
+🎮 **Play it:** open `index.html` in any modern browser — Three.js is bundled,
+so it runs fully offline — or visit the GitHub Pages site.
 
 ---
 
