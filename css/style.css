@@ -51,6 +51,8 @@ html, body {
   position: relative; display: inline-block;
   width: 0.92em; height: 0.92em;
   margin: 0 0.02em; vertical-align: -0.11em;
+  /* stand the orbit rings upright so the atom reads as the letter O */
+  transform: rotate(90deg);
 }
 .orbit {
   position: absolute; inset: 0; border: 1.5px solid rgba(34, 211, 238, 0.45);
