@@ -61,7 +61,9 @@ button, input[type="range"], .dex-card, .dex-tab { touch-action: manipulation; }
   transform: rotate(90deg);
 }
 .orbit {
-  position: absolute; inset: 0; border: 1.5px solid rgba(34, 211, 238, 0.45);
+  position: absolute; inset: 0;
+  /* em-scaled line weight keeps the rings crisp from splash size down to the topbar */
+  border: max(1px, 0.024em) solid rgba(34, 211, 238, 0.45);
   border-radius: 50%;
 }
 .o1 { transform: rotateX(65deg); animation: spin 4s linear infinite; }
