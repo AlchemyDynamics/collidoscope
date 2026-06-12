@@ -1,0 +1,15 @@
+{
+  "name": "COLLIDOSCOPE",
+  "short_name": "Collidoscope",
+  "description": "Run your own particle accelerator. Smash protons. Discover the universe.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#04050d",
+  "theme_color": "#04050d",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

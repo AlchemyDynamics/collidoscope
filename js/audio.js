@@ -5,12 +5,39 @@
 const SFX = (() => {
   let ctx = null;
   let muted = false;
+  let unlocked = false;
 
   function ac() {
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === 'suspended') ctx.resume();
+    // iOS reports 'interrupted' (non-standard) after backgrounding/calls,
+    // so resume on anything that isn't 'running', not just 'suspended'
+    if (ctx.state !== 'running') ctx.resume();
     return ctx;
   }
+
+  /* iOS unlock — must run inside the first user gesture.
+     Playing a (silent) <audio> element flips the audio session to the
+     "playback" category, so the ringer/silent switch no longer mutes
+     WebAudio. Without this, iPhones with the side switch on hear nothing. */
+  const SILENT_WAV = 'data:audio/wav;base64,UklGRjQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YRAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      const a = ac();
+      const src = a.createBufferSource();
+      src.buffer = a.createBuffer(1, 1, 22050);
+      src.connect(a.destination);
+      src.start(0);
+      const el = document.createElement('audio');
+      el.src = SILENT_WAV;
+      el.loop = true;
+      el.setAttribute('playsinline', '');
+      el.play().catch(() => {});
+    } catch (e) { /* sound is garnish */ }
+  }
+  ['touchend', 'click'].forEach(ev =>
+    document.addEventListener(ev, unlock, { once: true, capture: true }));
 
   function env(gain, t0, attack, peak, decay) {
     gain.gain.setValueAtTime(0.0001, t0);
@@ -111,6 +138,6 @@ const SFX = (() => {
   return {
     charge: safe(charge), boom: safe(boom), click: safe(click), scan: safe(scan),
     discover: safe(discover), legendary: safe(legendary), achievement: safe(achievement),
-    setMuted, isMuted,
+    setMuted, isMuted, unlock: safe(unlock),
   };
 })();

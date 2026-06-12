@@ -68,11 +68,19 @@
 
   function initSplash() {
     $('splash-fact').textContent = '💡 ' + SPLASH_FACTS[Math.floor(Math.random() * SPLASH_FACTS.length)];
+    const touch = window.matchMedia('(pointer: coarse)').matches;
+    if (touch) {
+      $('viewport-hint').innerHTML = '👆 drag to rotate · pinch to zoom · tap the <b>?</b> markers to identify particles!';
+    }
     $('splash-start').addEventListener('click', () => {
+      SFX.unlock();
       SFX.click();
       $('splash').classList.add('fading');
       setTimeout(() => $('splash').remove(), 1300);
       if (!localStorage.getItem(SAVE_KEY)) openModal('modal-help');
+      if (touch && window.matchMedia('(orientation: portrait)').matches) {
+        setTimeout(() => toast('📱 <b>Tip:</b> rotate to landscape for the full control room <small>(check rotation lock if it won\'t turn)</small>'), 1600);
+      }
     });
   }
 
