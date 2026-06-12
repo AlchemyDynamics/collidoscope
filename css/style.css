@@ -46,7 +46,12 @@ html, body {
 .splash-inner { text-align: center; animation: splashIn 1.6s ease both; }
 @keyframes splashIn { from { opacity: 0; transform: translateY(24px) scale(0.96); } to { opacity: 1; transform: none; } }
 
-.splash-atom { position: relative; width: 180px; height: 180px; margin: 0 auto 28px; }
+/* The atom IS the "O" in COLLID-O-SCOPE — all sizes in em so it scales with the title */
+.title-atom {
+  position: relative; display: inline-block;
+  width: 0.92em; height: 0.92em;
+  margin: 0 0.02em; vertical-align: -0.11em;
+}
 .orbit {
   position: absolute; inset: 0; border: 1.5px solid rgba(34, 211, 238, 0.45);
   border-radius: 50%;
@@ -58,31 +63,33 @@ html, body {
 .o2 { animation-name: spin2; } @keyframes spin2 { to { transform: rotateX(65deg) rotateY(60deg) rotate(360deg); } }
 .o3 { animation-name: spin3; } @keyframes spin3 { to { transform: rotateX(65deg) rotateY(-60deg) rotate(360deg); } }
 .nucleus {
-  position: absolute; top: 50%; left: 50%; width: 28px; height: 28px;
-  margin: -14px; border-radius: 50%;
+  position: absolute; top: 50%; left: 50%; width: 0.16em; height: 0.16em;
+  margin: -0.08em; border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fef9c3, var(--gold) 50%, #b45309);
-  box-shadow: 0 0 30px rgba(253, 224, 71, 0.8), 0 0 80px rgba(253, 224, 71, 0.4);
+  box-shadow: 0 0 0.16em rgba(253, 224, 71, 0.8), 0 0 0.45em rgba(253, 224, 71, 0.4);
   animation: pulse 2s ease-in-out infinite;
 }
 @keyframes pulse { 50% { transform: scale(1.15); } }
 .electron {
-  position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
-  margin: -5px; border-radius: 50%;
+  position: absolute; top: 50%; left: 50%; width: 0.07em; height: 0.07em;
+  margin: -0.035em; border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 12px var(--cyan);
+  box-shadow: 0 0 0.07em var(--cyan);
 }
 .e1 { animation: orbit1 3s linear infinite; }
 .e2 { animation: orbit1 4s linear infinite reverse; }
 .e3 { animation: orbit1 5s linear infinite; animation-delay: -1.5s; }
 @keyframes orbit1 {
-  from { transform: rotate(0deg) translateX(85px); }
-  to   { transform: rotate(360deg) translateX(85px); }
+  from { transform: rotate(0deg) translateX(0.43em); }
+  to   { transform: rotate(360deg) translateX(0.43em); }
 }
 
 .splash-title {
   font-family: var(--font-display); font-weight: 900; font-size: clamp(2.4rem, 7vw, 4.5rem);
   letter-spacing: 0.08em; color: #fff;
   text-shadow: 0 0 40px rgba(34, 211, 238, 0.6);
+  /* trailing letter-space after the final E nudges glyphs left of center; compensate */
+  padding-left: 0.08em;
 }
 .splash-title span { color: var(--cyan); }
 .splash-tag { margin: 14px 0 34px; font-size: 1.25rem; color: var(--text-dim); line-height: 1.5; }
