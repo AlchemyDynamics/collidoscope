@@ -532,16 +532,21 @@ input[type="range"]::-moz-range-thumb {
   }
   .brand { display: none; }
   .stat span { font-size: 1rem; }
+  /* three-pane cockpit: controls | detector | particle-dex banner.
+     Keeping the dex beside the viewport also keeps the 3D pane close to
+     square instead of a stretched 2:1 letterbox. */
   #layout {
-    grid-template-columns: minmax(240px, 300px) 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(225px, 270px) 1fr minmax(140px, 175px);
+    grid-template-rows: minmax(0, 1fr);
     gap: 8px;
     padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
-    height: auto;
+    height: calc(100dvh - 45px);
   }
-  #controls { grid-row: 1; grid-column: 1; height: calc(100dvh - 62px); }
-  #viewport { grid-row: 1; grid-column: 2; order: 0; height: calc(100dvh - 62px); }
-  #dex { grid-row: 2; grid-column: 1 / -1; }
+  #controls { grid-row: 1; grid-column: 1; }
+  #viewport { grid-row: 1; grid-column: 2; order: 0; height: auto; }
+  #dex { grid-row: 1; grid-column: 3; }
+  #dex h2 { font-size: 0.72rem; margin-bottom: 8px; }
+  .dex-tabs { display: none; }
   .panel { padding: 12px; }
   /* compact controls so the era display and all three sliders fit on screen
      (FIRE floats over the scene via the shared phone rules above) */
@@ -549,11 +554,18 @@ input[type="range"]::-moz-range-thumb {
   .slider-block { margin-bottom: 8px; }
   .slider-marks { display: none; }
   .era-display { margin-bottom: 10px; padding: 5px 12px; }
-  .dex-grid { grid-template-columns: repeat(6, 1fr); }
+  .dex-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  /* FIRE moves to the bottom-center of the detector pane (56% ≈ the
+     viewport column's center) so it covers neither the dex nor the legend */
+  #btn-fire { right: auto; left: 56%; transform: translateX(-50%); }
+  #btn-fire:active:not(:disabled) { transform: translateX(-50%) scale(0.97); }
+  #btn-fire:hover:not(:disabled) { transform: translateX(-50%); }
   .viewport-hint {
-    bottom: 32px; font-size: 0.78rem;
+    bottom: 72px; font-size: 0.78rem;
     white-space: normal; text-align: center; max-width: 90%;
   }
+  /* keep the legend clear of the centered FIRE button: stack it in the corner */
+  .detector-legend { flex-direction: column; gap: 2px; font-size: 0.62rem; bottom: 8px; left: 10px; }
 }
 
 /* NO-WEBGL FALLBACK (Lockdown Mode, old GPUs) */

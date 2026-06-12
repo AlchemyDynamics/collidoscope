@@ -193,6 +193,11 @@ const Detector3D = (() => {
     });
 
     window.addEventListener('resize', resize);
+    // window resize alone misses grid reflows and iOS reports stale sizes
+    // right after rotation — observe the pane itself
+    if (window.ResizeObserver) {
+      new ResizeObserver(resize).observe(canvasEl.parentElement || canvasEl);
+    }
     resize();
     requestAnimationFrame(loop);
   }
@@ -200,6 +205,8 @@ const Detector3D = (() => {
   function resize() {
     const w = canvasEl.clientWidth || canvasEl.parentElement.clientWidth;
     const h = canvasEl.clientHeight || canvasEl.parentElement.clientHeight;
+    if (!w || !h) return;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
