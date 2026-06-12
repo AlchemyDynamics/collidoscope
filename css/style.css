@@ -488,6 +488,12 @@ input[type="range"]::-moz-range-thumb {
   }
   .topstats { gap: 14px; }
   #viewport { height: 48vh; height: 48dvh; }
+  /* collision report first: counts, unknowns, and unusual signatures are
+     what send the player back into the detector — keep them in view */
+  #controls { display: flex; flex-direction: column; }
+  #controls h2 { order: -3; }
+  #event-report { order: -2; margin-bottom: 16px; }
+  #higgs-hunt { order: -1; margin-top: 0; margin-bottom: 16px; }
   /* extra bottom padding keeps content reachable above the floating FIRE button */
   #layout { padding: 10px max(10px, env(safe-area-inset-right)) calc(86px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); }
   .dex-grid { grid-template-columns: repeat(3, 1fr); }
