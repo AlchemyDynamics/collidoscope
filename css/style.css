@@ -312,6 +312,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ================= PARTICLE-DEX ================= */
+.dex-toggle { display: none; }
 .dex-count { font-size: 0.85rem; color: var(--text-dim); font-family: var(--font-body); }
 .dex-tabs { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
 .dex-tab {
@@ -544,9 +545,26 @@ input[type="range"]::-moz-range-thumb {
   }
   #controls { grid-row: 1; grid-column: 1; }
   #viewport { grid-row: 1; grid-column: 2; order: 0; height: auto; }
-  #dex { grid-row: 1; grid-column: 3; }
+  #dex { grid-row: 1; grid-column: 3; position: relative; padding-left: 30px; }
   #dex h2 { font-size: 0.72rem; margin-bottom: 8px; }
   .dex-tabs { display: none; }
+
+  /* dex minimize: strip on the dex's left edge; collapsed, the whole
+     column becomes one tappable bar showing the discovery count */
+  .dex-toggle {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; left: 0; top: 0; bottom: 0; width: 24px;
+    background: rgba(34, 211, 238, 0.08);
+    border: none; border-right: 1px solid var(--panel-border);
+    border-radius: 16px 0 0 16px;
+    color: var(--cyan); font-size: 0.72rem; cursor: pointer;
+    font-family: var(--font-display); letter-spacing: 0.08em;
+    writing-mode: vertical-rl;
+  }
+  #layout.dex-collapsed { grid-template-columns: minmax(225px, 270px) 1fr 32px; }
+  #layout.dex-collapsed #dex { padding: 0; overflow: hidden; }
+  #layout.dex-collapsed #dex > :not(.dex-toggle) { display: none; }
+  #layout.dex-collapsed .dex-toggle { width: 100%; border-right: none; border-radius: 16px; }
   .panel { padding: 12px; }
   /* compact controls so the era display and all three sliders fit on screen
      (FIRE floats over the scene via the shared phone rules above) */
@@ -599,3 +617,28 @@ input[type="range"]::-moz-range-thumb {
 }
 .event-report .chip:not(:disabled):hover { transform: scale(1.12); box-shadow: 0 0 10px rgba(125, 211, 252, 0.35); }
 .event-report .chip:disabled { cursor: default; opacity: 0.95; }
+
+/* ================= DETECTOR FULLSCREEN ================= */
+/* CSS takeover (iPhone Safari has no element-fullscreen API). The canvas
+   and camera are untouched, so the player's view survives the toggle. */
+body.detector-fs { overflow: hidden; }
+body.detector-fs #viewport {
+  position: fixed; inset: 0; z-index: 30;
+  height: 100dvh; border-radius: 0; border: none;
+}
+/* FIRE stays reachable on every device while fullscreen, desktop included.
+   The panel's backdrop-filter must go, or it captures the fixed button
+   (containing block) and stacks it beneath the fullscreen viewport. */
+body.detector-fs #controls { backdrop-filter: none; -webkit-backdrop-filter: none; }
+body.detector-fs #btn-fire {
+  position: fixed; z-index: 45;
+  right: auto; left: 50%; transform: translateX(-50%);
+  bottom: max(14px, env(safe-area-inset-bottom));
+  width: auto; margin: 0;
+  padding: 13px 26px; border-radius: 999px;
+  box-shadow: 0 6px 30px rgba(239, 68, 68, 0.55), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+body.detector-fs #btn-fire .fire-label { font-size: 1.15rem; }
+body.detector-fs #btn-fire .fire-sub { display: none; }
+body.detector-fs #btn-fire:hover:not(:disabled) { transform: translateX(-50%); }
+body.detector-fs #btn-fire:active:not(:disabled) { transform: translateX(-50%) scale(0.97); }

@@ -415,6 +415,14 @@
     $('stat-discovered').textContent = `${state.discovered.size}/${TOTAL_SPECIES}`;
     $('stat-score').textContent = state.score.toLocaleString();
     updateHiggsPanel();
+    updateDexToggle();
+  }
+
+  // collapsed dex bar still shows the discovery count
+  function updateDexToggle() {
+    $('dex-toggle').textContent = $('layout').classList.contains('dex-collapsed')
+      ? `◀ ${state.discovered.size}/${TOTAL_SPECIES}`
+      : '▶';
   }
 
   function toast(html, gold = false) {
@@ -500,12 +508,41 @@
     $('btn-cam-reset').addEventListener('click', () => { try { Detector3D.resetCamera(); } catch (e) {} });
     $('disco-close').addEventListener('click', () => { SFX.click(); closeModals(); });
 
+    // detector fullscreen: CSS takeover, camera untouched so the view persists
+    $('btn-fs').addEventListener('click', () => {
+      SFX.click();
+      const on = document.body.classList.toggle('detector-fs');
+      $('btn-fs').textContent = on ? '✕' : '⛶';
+      $('btn-fs').title = on ? 'Exit fullscreen' : 'Fullscreen detector';
+    });
+
+    // particle-dex minimize (landscape cockpit)
+    let dexCollapsed = localStorage.getItem('collidoscope_dex_min') === '1';
+    const applyDex = () => {
+      $('layout').classList.toggle('dex-collapsed', dexCollapsed);
+      updateDexToggle();
+    };
+    $('dex-toggle').addEventListener('click', () => {
+      SFX.click();
+      dexCollapsed = !dexCollapsed;
+      localStorage.setItem('collidoscope_dex_min', dexCollapsed ? '1' : '0');
+      applyDex();
+    });
+    applyDex();
+
     document.addEventListener('click', e => {
       if (e.target.matches('[data-close]')) { SFX.click(); closeModals(); }
       if (e.target.classList.contains('modal')) closeModals();
     });
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeModals();
+      if (e.key === 'Escape') {
+        if (document.body.classList.contains('detector-fs')) {
+          document.body.classList.remove('detector-fs');
+          $('btn-fs').textContent = '⛶';
+          $('btn-fs').title = 'Fullscreen detector';
+        }
+        closeModals();
+      }
       if (e.key === ' ' && !firing && document.activeElement.tagName !== 'INPUT' &&
           ![...document.querySelectorAll('.modal')].some(m => !m.classList.contains('hidden'))) {
         e.preventDefault(); fire();
