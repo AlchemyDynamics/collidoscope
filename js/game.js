@@ -78,8 +78,14 @@
       $('splash').classList.add('fading');
       setTimeout(() => $('splash').remove(), 1300);
       if (!localStorage.getItem(SAVE_KEY)) openModal('modal-help');
+      const standalone = window.navigator.standalone === true
+        || window.matchMedia('(display-mode: standalone)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches;
       if (touch && window.matchMedia('(orientation: portrait)').matches) {
         setTimeout(() => toast('📱 <b>Tip:</b> rotate to landscape for the full control room <small>(check rotation lock if it won\'t turn)</small>'), 1600);
+      }
+      if (touch && !standalone) {
+        setTimeout(() => toast('⛶ <b>Go fullscreen:</b> tap Share, then <b>Add to Home Screen</b> <small>launches the game without browser bars</small>', true), 6200);
       }
     });
   }
@@ -412,10 +418,14 @@
   }
 
   function toast(html, gold = false) {
+    const wrap = $('toasts');
+    // phones: cap the stack so notifications never wall off the detector
+    const cap = window.matchMedia('(pointer: coarse)').matches ? 2 : 5;
+    while (wrap.children.length >= cap) wrap.firstChild.remove();
     const t = document.createElement('div');
     t.className = 'toast' + (gold ? ' gold' : '');
     t.innerHTML = html;
-    $('toasts').appendChild(t);
+    wrap.appendChild(t);
     setTimeout(() => t.remove(), 4400);
   }
 
