@@ -39,6 +39,7 @@
       score: state.score,
       achievements: [...state.achievements],
       higgsCandidates: state.higgsCandidates,
+      higgsDryFires: state.higgsDryFires,
       higgsConfirmed: state.higgsConfirmed,
     }));
   }
@@ -52,6 +53,7 @@
       state.score = d.score || 0;
       state.achievements = new Set(d.achievements || []);
       state.higgsCandidates = d.higgsCandidates || 0;
+      state.higgsDryFires = d.higgsDryFires || 0;
       state.higgsConfirmed = !!d.higgsConfirmed;
     } catch (e) { /* fresh start */ }
   }
@@ -244,7 +246,7 @@
   /* ---------------- the Higgs: a 5-sigma journey ---------------- */
   function handleHiggsCandidate() {
     state.higgsCandidates = Math.min(4, state.higgsCandidates + 1);
-    state.seenCounts.higgs = (state.seenCounts.higgs || 0) + 1;
+    // (seenCounts.higgs already incremented by onParticleClicked)
     unlock('candidate');
     SFX.discover(2);
     confettiBurst(120, '#fde047');
