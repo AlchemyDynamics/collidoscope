@@ -169,14 +169,16 @@ input[type="range"]:focus-visible,
   font-size: 0.78rem; letter-spacing: 0.14em; color: var(--text-dim);
 }
 .credit img {
-  height: 23px; width: auto;
+  height: 25px; width: auto;
   filter: drop-shadow(0 0 6px rgba(253, 224, 71, 0.35));
 }
-/* on the splash overlay the credit pins to the bottom edge */
+.credit-by { margin-right: 2px; }
+/* on the splash overlay the credit pins to the bottom edge;
+   translate-centering is immune to flex/scrollbar quirks */
 #splash .credit {
-  position: absolute; left: 0; right: 0;
+  position: absolute; left: 50%; transform: translateX(-50%);
   bottom: max(16px, env(safe-area-inset-bottom));
-  height: auto; padding: 0;
+  width: max-content; height: auto; padding: 0;
 }
 .credit b {
   font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
