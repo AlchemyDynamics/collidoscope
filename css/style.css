@@ -36,8 +36,18 @@ html, body {
 }
 
 /* touch: no double-tap zoom on game controls; canvas owns its gestures */
-button, input[type="range"], .dex-card, .dex-tab { touch-action: manipulation; }
+button, input[type="range"], .dex-card, .dex-tab, .info-dot { touch-action: manipulation; }
 #scene3d { touch-action: none; }
+
+button:focus-visible,
+input[type="range"]:focus-visible,
+.dex-card:focus-visible,
+.dex-tab:focus-visible,
+.modal-card:focus-visible,
+.info-dot:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
 
 /* ================= SPLASH ================= */
 #splash {
@@ -189,7 +199,8 @@ button, input[type="range"], .dex-card, .dex-tab { touch-action: manipulation; }
   background: rgba(34, 211, 238, 0.18); color: var(--cyan);
   font-size: 0.65rem; font-style: italic; cursor: help; position: relative;
 }
-.info-dot:hover::after {
+.info-dot:hover::after,
+.info-dot:focus-visible::after {
   content: attr(data-tip);
   position: absolute; left: 20px; top: -8px; z-index: 50;
   width: 230px; padding: 10px 12px; border-radius: 10px;
@@ -467,7 +478,6 @@ input[type="range"]::-moz-range-thumb {
 #confetti { position: fixed; inset: 0; z-index: 90; pointer-events: none; }
 
 .hidden { display: none !important; }
-.modal.hidden { display: flex !important; }
 
 /* scrollbars */
 ::-webkit-scrollbar { width: 8px; }

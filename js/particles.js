@@ -1,6 +1,6 @@
 /* ============================================================
    COLLIDOSCOPE — Particle Database
-   All values from the Particle Data Group (PDG 2024).
+   Reference values are based on standard particle-physics data.
    threshold = approximate √s (GeV) needed to produce the
    particle in a collision (≈ pair-production / resonance
    energy, simplified for gameplay).
@@ -183,7 +183,7 @@ const PARTICLES = {
     discovered: '1983 — UA1 & UA2 experiments, CERN',
     tagline: 'The W\'s neutral sibling',
     funFact: 'The Z is like a heavy photon with no charge. Studying millions of Z bosons told us there are EXACTLY three families of particles in the universe — no more hiding!',
-    howWeSeeIt: 'Two energetic muons shooting out back-to-back. Add up their energy and you get exactly 91 GeV — the Z\'s mass — every single time.',
+    howWeSeeIt: 'Two energetic muons shooting out nearly back-to-back. Add up their energy and the event clusters around 91 GeV — the Z\'s mass peak.',
   },
 
   /* ---------------- HADRONS: BARYONS ---------------- */
@@ -383,7 +383,7 @@ const PARTICLES = {
     discovered: '4 July 2012 — ATLAS & CMS, CERN Large Hadron Collider',
     tagline: 'The “God Particle”',
     funFact: 'The Higgs field fills the entire universe like invisible syrup — particles wading through it is what gives them MASS. Peter Higgs predicted it in 1964; it took 48 years, a 27-km machine, and thousands of scientists to find it. Only 1 in 10 BILLION collisions makes one. When CERN announced it, Peter Higgs cried. So did half the audience.',
-    howWeSeeIt: 'Two ultra-pure photons whose energies combine to exactly 125 GeV. One candidate proves nothing — you need enough of them to reach 5-sigma certainty: a 1-in-3.5-million chance of being a fluke!',
+    howWeSeeIt: 'Two ultra-pure photons whose energies combine near 125 GeV. One candidate proves nothing — you need enough of them to reach 5-sigma certainty: a 1-in-3.5-million chance of being a fluke!',
   },
 };
 

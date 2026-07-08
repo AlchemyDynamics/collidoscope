@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>COLLIDOSCOPE — Run Your Own Particle Accelerator</title>
-<meta name="description" content="Power up a particle accelerator, smash protons, and discover the particles of the Standard Model — all the way to the Higgs boson. Real physics, real history, real fun." />
+<meta name="description" content="Power up a physics-inspired particle accelerator, smash protons, and discover particles from the Standard Model — all the way to the Higgs boson." />
 <meta name="theme-color" content="#04050d" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -24,7 +24,7 @@
   <div class="splash-inner">
     <h1 class="splash-title" aria-label="COLLIDOSCOPE">COLLID<span class="title-atom" aria-hidden="true"><span class="orbit o1"></span><span class="orbit o2"></span><span class="orbit o3"></span><span class="nucleus"></span><span class="electron e1"></span><span class="electron e2"></span><span class="electron e3"></span></span><span>SCOPE</span></h1>
     <p class="splash-tag">Run your own particle accelerator.<br>Smash protons. Discover the universe.</p>
-    <button id="splash-start" class="btn-start">▶ &nbsp;START THE BEAM</button>
+    <button id="splash-start" class="btn-start" aria-label="Start Collidoscope">▶ &nbsp;START THE BEAM</button>
     <p class="splash-fact" id="splash-fact"></p>
   </div>
 </div>
@@ -32,15 +32,15 @@
 <!-- ======= TOP BAR ======= -->
 <header id="topbar">
   <div class="brand"><strong aria-label="COLLIDOSCOPE">COLLID<span class="title-atom" aria-hidden="true"><span class="orbit o1"></span><span class="orbit o2"></span><span class="orbit o3"></span><span class="nucleus"></span><span class="electron e1"></span><span class="electron e2"></span><span class="electron e3"></span></span><span>SCOPE</span></strong></div>
-  <div class="topstats">
+  <div class="topstats" aria-live="polite">
     <div class="stat"><span id="stat-collisions">0</span><label>Collisions</label></div>
     <div class="stat"><span id="stat-discovered">0/32</span><label>Discovered</label></div>
     <div class="stat"><span id="stat-score">0</span><label>Science Points</label></div>
   </div>
   <div class="topbtns">
-    <button id="btn-help" title="How to play">❓</button>
-    <button id="btn-mute" title="Sound on/off">🔊</button>
-    <button id="btn-trophies" title="Achievements">🏆</button>
+    <button id="btn-help" title="How to play" aria-label="How to play">❓</button>
+    <button id="btn-mute" title="Sound on/off" aria-label="Mute sound">🔊</button>
+    <button id="btn-trophies" title="Achievements" aria-label="Achievements">🏆</button>
   </div>
 </header>
 
@@ -58,7 +58,7 @@
 
     <div class="slider-block">
       <div class="slider-head">
-        <label>BEAM ENERGY <span class="info-dot" data-tip="√s = collision energy. E = mc² — heavier particles need more energy to create! The LHC reaches 13.6 TeV.">i</span></label>
+        <label for="sl-energy">BEAM ENERGY <span class="info-dot" tabindex="0" aria-label="Collision energy help" data-tip="√s = collision energy. E = mc² — heavier particles need more energy to create! The LHC reaches 13.6 TeV.">i</span></label>
         <span class="slider-val" id="val-energy">1.0 GeV</span>
       </div>
       <input type="range" id="sl-energy" min="0" max="1000" value="180" />
@@ -67,7 +67,7 @@
 
     <div class="slider-block">
       <div class="slider-head">
-        <label>BEAM INTENSITY <span class="info-dot" data-tip="Luminosity — how tightly packed your proton bunches are. More intensity = more collisions = better odds of producing RARE particles.">i</span></label>
+        <label for="sl-lumi">BEAM INTENSITY <span class="info-dot" tabindex="0" aria-label="Beam intensity help" data-tip="Luminosity — how tightly packed your proton bunches are. More intensity = more collisions = better odds of producing RARE particles.">i</span></label>
         <span class="slider-val" id="val-lumi">50%</span>
       </div>
       <input type="range" id="sl-lumi" min="5" max="100" value="50" />
@@ -76,16 +76,16 @@
 
     <div class="slider-block">
       <div class="slider-head">
-        <label>MAGNET FIELD <span class="info-dot" data-tip="The solenoid magnet bends charged particle tracks: R = pT / (0.3·B). Stronger field = tighter curls = easier to measure momentum. CMS uses 3.8 T!">i</span></label>
+        <label for="sl-bfield">MAGNET FIELD <span class="info-dot" tabindex="0" aria-label="Magnet field help" data-tip="The solenoid magnet bends charged particle tracks: R = pT / (0.3·B). Stronger field = tighter curls = easier to measure momentum. CMS uses 3.8 T!">i</span></label>
         <span class="slider-val" id="val-bfield">3.8 T</span>
       </div>
       <input type="range" id="sl-bfield" min="5" max="80" value="38" />
       <div class="slider-marks"><span>0.5 T</span><span>8 T</span></div>
     </div>
 
-    <button id="btn-fire"><span class="fire-label">🔥 FIRE</span><span class="fire-sub">collide the beams</span></button>
+    <button id="btn-fire" aria-label="Fire the proton beams"><span class="fire-label">🔥 FIRE</span><span class="fire-sub">collide the beams</span></button>
 
-    <div id="event-report" class="event-report">
+    <div id="event-report" class="event-report" aria-live="polite" aria-atomic="true">
       <em>Power up and fire to create your first collision…</em>
     </div>
 
@@ -103,12 +103,12 @@
 
   <!-- 3D EVENT DISPLAY -->
   <section id="viewport">
-    <canvas id="scene3d"></canvas>
+    <canvas id="scene3d" role="img" aria-label="Interactive 3D particle detector event display"></canvas>
     <div class="viewport-hud">
-      <div class="hud-left" id="hud-status">DETECTOR READY</div>
+      <div class="hud-left" id="hud-status" role="status" aria-live="polite">DETECTOR READY</div>
       <div class="hud-right">
-        <button id="btn-fs" title="Fullscreen detector">⛶</button>
-        <button id="btn-cam-reset" title="Reset camera">⌖</button>
+        <button id="btn-fs" title="Fullscreen detector" aria-label="Fullscreen detector">⛶</button>
+        <button id="btn-cam-reset" title="Reset camera" aria-label="Reset camera">⌖</button>
       </div>
     </div>
     <div class="viewport-hint" id="viewport-hint">🖱️ drag to rotate · scroll to zoom · click the <b>?</b> markers to identify particles!</div>
@@ -122,7 +122,7 @@
 
   <!-- PARTICLE-DEX -->
   <section id="dex" class="panel">
-    <button id="dex-toggle" class="dex-toggle" title="Minimize Particle-Dex">▶</button>
+    <button id="dex-toggle" class="dex-toggle" title="Minimize Particle-Dex" aria-label="Minimize Particle-Dex">▶</button>
     <h2>📖 PARTICLE-DEX <span id="dex-count" class="dex-count">0/32</span></h2>
     <div class="dex-tabs">
       <button class="dex-tab active" data-filter="all">All</button>
@@ -136,8 +136,8 @@
 </main>
 
 <!-- ======= DISCOVERY MODAL ======= -->
-<div id="modal-discovery" class="modal hidden">
-  <div class="modal-card discovery-card" id="discovery-card">
+<div id="modal-discovery" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="disco-name" aria-hidden="true" inert>
+  <div class="modal-card discovery-card" id="discovery-card" tabindex="-1">
     <div class="disco-banner" id="disco-banner">NEW DISCOVERY!</div>
     <div class="disco-symbol" id="disco-symbol">μ</div>
     <h2 id="disco-name">Muon</h2>
@@ -153,23 +153,23 @@
 </div>
 
 <!-- ======= DEX PROFILE MODAL ======= -->
-<div id="modal-profile" class="modal hidden">
-  <div class="modal-card profile-card" id="profile-card"></div>
+<div id="modal-profile" class="modal hidden" role="dialog" aria-modal="true" aria-label="Particle profile" aria-hidden="true" inert>
+  <div class="modal-card profile-card" id="profile-card" tabindex="-1"></div>
 </div>
 
 <!-- ======= TROPHIES MODAL ======= -->
-<div id="modal-trophies" class="modal hidden">
-  <div class="modal-card trophies-card">
-    <h2>🏆 ACHIEVEMENTS</h2>
+<div id="modal-trophies" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="trophies-title" aria-hidden="true" inert>
+  <div class="modal-card trophies-card" tabindex="-1">
+    <h2 id="trophies-title">🏆 ACHIEVEMENTS</h2>
     <div id="trophy-list" class="trophy-list"></div>
     <button class="btn-close-modal" data-close>CLOSE</button>
   </div>
 </div>
 
 <!-- ======= HELP MODAL ======= -->
-<div id="modal-help" class="modal hidden">
-  <div class="modal-card help-card">
-    <h2>🔬 HOW TO RUN YOUR COLLIDER</h2>
+<div id="modal-help" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-title" aria-hidden="true" inert>
+  <div class="modal-card help-card" tabindex="-1">
+    <h2 id="help-title">🔬 HOW TO RUN YOUR COLLIDER</h2>
     <ol>
       <li><b>⚡ Set your beam energy.</b> E = mc² — you can only create particles you have enough energy for. Heavier particles need bigger smashes!</li>
       <li><b>🎚️ Crank the intensity.</b> Rare particles are RARE — a Higgs appears in ~1 of 10 billion collisions at CERN. More intensity = better odds.</li>
@@ -178,7 +178,7 @@
       <li><b>🧲 Read the tracks like a physicist:</b> tight curls = low momentum · straight stiff tracks = high momentum · tracks that stop in green = electrons &amp; photons · orange = hadrons · tracks that escape everything = muons · dashed arrow = a neutrino stole energy!</li>
       <li><b>👑 The endgame:</b> discover the W, Z, and top quark, then push past 5 TeV at high intensity to hunt the legendary <i>Higgs boson</i>. One candidate isn't proof — you need <b>5σ</b> certainty, just like CERN in 2012.</li>
     </ol>
-    <p class="help-foot">Every particle in this game is real. Every mass, every discovery date, every decay — that's the actual Standard Model of particle physics. 🌌</p>
+    <p class="help-foot">The particles, masses, charges, and discovery history come from real particle physics. The event odds and detector display are simplified for fast, playable learning. 🌌</p>
     <button class="btn-close-modal" data-close>LET'S SMASH ⚛️</button>
   </div>
 </div>

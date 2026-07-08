@@ -2,8 +2,8 @@
 
 **Run your own particle accelerator. Smash protons. Discover the universe.**
 
-Collidoscope is a browser game for curious kids (and grown-ups) that turns real
-particle physics into a discovery hunt. You operate a CERN-style collider:
+Collidoscope is a browser game for curious kids (and grown-ups) that turns
+particle physics concepts into a discovery hunt. You operate a CERN-style collider:
 crank the beam energy, squeeze the luminosity, fire the beams, and identify
 the particles spraying through your 3D detector — logging every species in
 your **Particle-Dex**, all the way to the legendary **Higgs boson**.
@@ -27,31 +27,32 @@ so it runs fully offline — or visit the GitHub Pages site.
    points, and sometimes an achievement.
 6. **👑 Earn the Higgs** — discover the W, Z, and top quark first, then run
    above 5 TeV at high intensity. One candidate proves nothing: collect
-   enough twin-photon events at 125 GeV to reach **5σ significance**,
-   exactly like ATLAS & CMS did on July 4, 2012.
+   enough twin-photon candidate events near 125 GeV to reach **5σ significance**,
+   inspired by the statistical story of ATLAS & CMS on July 4, 2012.
 
-## The physics is real
+## The Physics Model
 
-- **32 species** with true PDG masses, charges, spins, lifetimes, decay
-  channels, and discovery history — from the electron (1897) to the Higgs (2012).
-- **Energy thresholds**: particles only appear when √s can pay for them.
-- **Cross-section flavored rarity**: a Higgs is ~1 in 10 billion collisions at
-  the LHC; here luminosity boosts your odds, like in real life.
-- **Honest detector**: barrel layers modeled on CMS — silicon tracker, ECAL,
-  HCAL, muon chambers. Electrons/photons stop in the ECAL, hadrons in the
-  HCAL, muons punch through everything, neutrinos appear only as missing
-  energy. Charged tracks helix with R = pT/(0.3 B).
-- **Real signatures**: quarks appear only as jets (confinement!), strange
-  baryons decay in V's and cascades at displaced vertices, the Z shows up as a
-  back-to-back muon pair, the Higgs as twin photons at 125 GeV.
-- **Track multiplicity** grows with log(√s), like real minimum-bias pp data.
+- **32 species** using real-world masses, charges, spins, lifetimes, decay
+  motifs, and discovery history — from the electron (1897) to the Higgs (2012).
+- **Energy thresholds**: particles only appear when √s is high enough for the
+  simplified production threshold used by the game.
+- **Cross-section-flavored rarity**: luminosity boosts the odds of rare events,
+  while the exact rates are intentionally tuned for playability.
+- **Detector-inspired event display**: barrel layers modeled after collider
+  detectors — silicon tracker, ECAL, HCAL, muon chambers. Electrons/photons
+  stop in the ECAL, hadrons in the HCAL, muons punch through, and neutrinos
+  appear as missing energy. Charged tracks helix with R = pT/(0.3 B).
+- **Recognizable signatures**: quarks appear as jets, strange baryons decay in
+  V's and cascades at displaced vertices, the Z shows up as a muon pair, and
+  the Higgs hunt uses a twin-photon candidate signature near 125 GeV.
+- **Track multiplicity** grows with log(√s), echoing real pp-collision behavior.
 - The energy slider walks through accelerator history: Cyclotron → Bevatron →
   SPS → SppS → Tevatron → LHC.
 
 ## Tech
 
-Vanilla HTML/CSS/JS + Three.js (CDN, no build step). WebAudio-synthesized
-sound. Progress saved in `localStorage`.
+Vanilla HTML/CSS/JS + bundled Three.js, with no build step required to play.
+WebAudio-synthesized sound. Progress saved in `localStorage`.
 
 ```
 index.html        shell & layout
@@ -61,7 +62,18 @@ js/physics.js     event generation & track kinematics
 js/detector3d.js  Three.js detector + event display
 js/audio.js       synthesized SFX
 js/game.js        game state, dex, achievements, Higgs hunt
+tests/            Playwright smoke test for the core game loop
 ```
+
+## Development
+
+```bash
+pnpm install
+pnpm exec playwright install chromium
+pnpm test
+```
+
+The GitHub Pages workflow runs the smoke test before deployment.
 
 ## Sources
 

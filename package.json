@@ -1,0 +1,14 @@
+{
+  "name": "collidoscope",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.7.0",
+  "description": "A physics-inspired browser game for exploring particle-collider events.",
+  "scripts": {
+    "test": "node --test tests/smoke.test.cjs",
+    "test:smoke": "node --test tests/smoke.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.54.0"
+  }
+}

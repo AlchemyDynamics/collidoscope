@@ -270,6 +270,26 @@ const Detector3D = (() => {
     return m;
   }
 
+  function disposeTexture(tex) {
+    if (!tex || tex === GLOW_TEX || tex === SPARK_TEX) return;
+    tex.dispose();
+  }
+
+  function disposeMaterial(mat) {
+    if (!mat) return;
+    if (Array.isArray(mat)) {
+      mat.forEach(disposeMaterial);
+      return;
+    }
+    disposeTexture(mat.map);
+    mat.dispose();
+  }
+
+  function disposeObject(o) {
+    if (o.geometry) o.geometry.dispose();
+    disposeMaterial(o.material);
+  }
+
   /* ---------- render one collision event ---------- */
   function renderEvent(event, bField) {
     clearEvent();
@@ -360,8 +380,8 @@ const Detector3D = (() => {
   }
 
   function clearEvent() {
-    markers.forEach(m => m.material.dispose());
-    eventGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material.map !== GLOW_TEX && o.material.map !== SPARK_TEX) { /* keep shared */ } });
+    if (!eventGroup) return;
+    eventGroup.traverse(disposeObject);
     while (eventGroup.children.length) eventGroup.remove(eventGroup.children[0]);
     markers = [];
     trackMeshes = [];
@@ -382,6 +402,7 @@ const Detector3D = (() => {
     ctx.font = 'bold 30px "Segoe UI Symbol", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(symbol, 48, 49);
+    disposeTexture(marker.material.map);
     marker.material.map = new THREE.CanvasTexture(c);
     marker.material.needsUpdate = true;
     marker.userData.resolved = true;

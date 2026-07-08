@@ -1,7 +1,7 @@
 {
   "name": "COLLIDOSCOPE",
   "short_name": "Collidoscope",
-  "description": "Run your own particle accelerator. Smash protons. Discover the universe.",
+  "description": "Run a physics-inspired particle accelerator. Smash protons. Discover the Standard Model.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

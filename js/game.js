@@ -23,12 +23,20 @@
   let currentEvent = null;
   let firing = false;
   let no3D = false;   // WebGL unavailable (Lockdown Mode, old GPU…) — game stays playable
+  let activeModal = null;
+  let lastFocused = null;
   let settings = { sqrtS: 1, lumi: 0.5, bField: 3.8 };
 
   /* ---------------- dom ---------------- */
   const $ = id => document.getElementById(id);
   const fireBtn = $('btn-fire');
   const hudStatus = $('hud-status');
+
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[ch]));
+  }
 
   /* ---------------- save / load ---------------- */
   function save() {
@@ -120,6 +128,9 @@
       $('val-energy').textContent = fmtEnergy(settings.sqrtS);
       $('val-lumi').textContent = Math.round(settings.lumi * 100) + '%';
       $('val-bfield').textContent = settings.bField.toFixed(1) + ' T';
+      slE.setAttribute('aria-valuetext', fmtEnergy(settings.sqrtS));
+      slL.setAttribute('aria-valuetext', Math.round(settings.lumi * 100) + '% intensity');
+      slB.setAttribute('aria-valuetext', settings.bField.toFixed(1) + ' tesla');
       updateEra();
     };
     [slE, slL, slB].forEach(s => s.addEventListener('input', sync));
@@ -192,7 +203,7 @@
     if (no3D) {
       html += `<span class="rep-line"><em>Tap each ? to identify the particle:</em></span>`;
       html += `<span class="rep-chips">` + ev.particles.map((p, i) =>
-        `<button class="chip" data-pidx="${i}" style="border-color:${PARTICLES[p.species].color}">?</button>`
+        `<button class="chip" data-pidx="${i}" style="border-color:${PARTICLES[p.species].color}" aria-label="Identify particle ${i + 1}">?</button>`
       ).join('') + `</span>`;
     } else {
       html += `<span class="rep-line"><em>Rotate the detector and click every ? marker.</em></span>`;
@@ -336,7 +347,18 @@
         <div class="sym" style="color:${got ? sp.color : '#475569'}">${got ? sp.symbol : '?'}</div>
         <div class="nm">${got ? sp.name : '???'}</div>
         <div class="seen">${got ? '×' + (state.seenCounts[sp.id] || 1) : r.label}</div>`;
-      if (got) card.addEventListener('click', () => { SFX.click(); showProfile(sp); });
+      if (got) {
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `${sp.name}, seen ${state.seenCounts[sp.id] || 1} times`);
+        const open = () => { SFX.click(); showProfile(sp); };
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+        });
+      } else {
+        card.setAttribute('aria-label', `Locked ${r.label} particle`);
+      }
       grid.appendChild(card);
     });
     $('dex-count').textContent = `${state.discovered.size}/${TOTAL_SPECIES}`;
@@ -359,7 +381,7 @@
       <p class="disco-fact">🌟 ${sp.funFact}</p>
       <p class="disco-how">🔬 <b>How physicists catch it:</b> ${sp.howWeSeeIt}${sp.decayNote ? `<br>⚛️ <b>Decay:</b> ${sp.decayNote}` : ''}</p>
       <p class="disco-history">📜 First discovered: ${sp.discovered}</p>
-      <button class="btn-close-modal" data-close>CLOSE</button>`;
+      <button class="btn-close-modal" data-close aria-label="Close particle profile">CLOSE</button>`;
     openModal('modal-profile');
   }
 
@@ -422,9 +444,10 @@
 
   // collapsed dex bar still shows the discovery count
   function updateDexToggle() {
-    $('dex-toggle').textContent = $('layout').classList.contains('dex-collapsed')
-      ? `◀ ${state.discovered.size}/${TOTAL_SPECIES}`
-      : '▶';
+    const collapsed = $('layout').classList.contains('dex-collapsed');
+    $('dex-toggle').textContent = collapsed ? `◀ ${state.discovered.size}/${TOTAL_SPECIES}` : '▶';
+    $('dex-toggle').setAttribute('aria-label', collapsed ? 'Expand Particle-Dex' : 'Minimize Particle-Dex');
+    $('dex-toggle').title = collapsed ? 'Expand Particle-Dex' : 'Minimize Particle-Dex';
   }
 
   function toast(html, gold = false) {
@@ -439,8 +462,39 @@
     setTimeout(() => t.remove(), 4400);
   }
 
-  function openModal(id) { $(id).classList.remove('hidden'); }
-  function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden')); }
+  function setModalHidden(modal, hidden) {
+    modal.classList.toggle('hidden', hidden);
+    modal.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+    if (hidden) modal.setAttribute('inert', '');
+    else modal.removeAttribute('inert');
+    try { modal.inert = hidden; } catch (e) { /* inert is progressive enhancement */ }
+  }
+
+  function getFocusable(root) {
+    return [...root.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+      .filter(el => !el.disabled && !el.closest('[inert]') && el.offsetParent !== null);
+  }
+
+  function openModal(id) {
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeModals(false);
+    const modal = $(id);
+    setModalHidden(modal, false);
+    activeModal = modal;
+    requestAnimationFrame(() => {
+      const target = getFocusable(modal)[0] || modal.querySelector('.modal-card') || modal;
+      target.focus({ preventScroll: true });
+    });
+  }
+
+  function closeModals(restoreFocus = true) {
+    document.querySelectorAll('.modal').forEach(m => setModalHidden(m, true));
+    activeModal = null;
+    if (restoreFocus && lastFocused && document.contains(lastFocused)) {
+      try { lastFocused.focus({ preventScroll: true }); } catch (e) { /* non-focusable target */ }
+    }
+    if (restoreFocus) lastFocused = null;
+  }
 
   /* ---------------- confetti ---------------- */
   const confettiCanvas = $('confetti');
@@ -506,6 +560,7 @@
     $('btn-mute').addEventListener('click', () => {
       SFX.setMuted(!SFX.isMuted());
       $('btn-mute').textContent = SFX.isMuted() ? '🔇' : '🔊';
+      $('btn-mute').setAttribute('aria-label', SFX.isMuted() ? 'Unmute sound' : 'Mute sound');
     });
     $('btn-cam-reset').addEventListener('click', () => { try { Detector3D.resetCamera(); } catch (e) {} });
     $('disco-close').addEventListener('click', () => { SFX.click(); closeModals(); });
@@ -516,6 +571,7 @@
       const on = document.body.classList.toggle('detector-fs');
       $('btn-fs').textContent = on ? '✕' : '⛶';
       $('btn-fs').title = on ? 'Exit fullscreen' : 'Fullscreen detector';
+      $('btn-fs').setAttribute('aria-label', on ? 'Exit detector fullscreen' : 'Fullscreen detector');
     });
 
     // particle-dex minimize (landscape cockpit)
@@ -537,11 +593,27 @@
       if (e.target.classList.contains('modal')) closeModals();
     });
     document.addEventListener('keydown', e => {
+      if (e.key === 'Tab' && activeModal && !activeModal.classList.contains('hidden')) {
+        const focusable = getFocusable(activeModal);
+        if (!focusable.length) {
+          e.preventDefault();
+          (activeModal.querySelector('.modal-card') || activeModal).focus({ preventScroll: true });
+          return;
+        }
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus({ preventScroll: true });
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus({ preventScroll: true });
+        }
+        return;
+      }
       if (e.key === 'Escape') {
         if (document.body.classList.contains('detector-fs')) {
           document.body.classList.remove('detector-fs');
           $('btn-fs').textContent = '⛶';
           $('btn-fs').title = 'Fullscreen detector';
+          $('btn-fs').setAttribute('aria-label', 'Fullscreen detector');
         }
         closeModals();
       }
@@ -563,6 +635,7 @@
         b.textContent = sp.symbol;
         b.style.color = sp.color;
         b.disabled = true;
+        b.setAttribute('aria-label', `Identified ${sp.name}`);
       }
     });
 
@@ -606,7 +679,7 @@
           <li>Older Safari: <i>Safari → Settings → Websites → WebGL</i> → set this site to <b>Allow</b>.</li>
           <li>Or open this page in Chrome, Firefox, or Edge.</li>
         </ul>
-        <p class="wf-tech">${(e && e.message ? e.message : 'WebGL error')} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, '')}</p>
+        <p class="wf-tech">${escapeHTML(e && e.message ? e.message : 'WebGL error')} · ${escapeHTML(navigator.userAgent.replace(/^Mozilla\/5\.0 /, ''))}</p>
       </div>`);
   }
   refreshStats();
@@ -615,6 +688,6 @@
 
   // surface unexpected errors so remote players can report them
   window.addEventListener('error', e => {
-    toast(`⚠️ <b>Glitch in the detector</b><small>${e.message || 'unknown error'}</small>`);
+    toast(`⚠️ <b>Glitch in the detector</b><small>${escapeHTML(e.message || 'unknown error')}</small>`);
   });
 })();
