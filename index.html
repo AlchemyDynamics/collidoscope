@@ -41,6 +41,8 @@
     <button id="btn-help" title="How to play" aria-label="How to play">❓</button>
     <button id="btn-mute" title="Sound on/off" aria-label="Mute sound">🔊</button>
     <button id="btn-trophies" title="Achievements" aria-label="Achievements">🏆</button>
+    <button id="btn-save" title="Save progress" aria-label="Save progress">💾</button>
+    <button id="btn-reset" title="New game — reset all progress" aria-label="New game, reset all progress">🔄</button>
   </div>
 </header>
 
@@ -180,6 +182,20 @@
     </ol>
     <p class="help-foot">The particles, masses, charges, and discovery history come from real particle physics. The event odds and detector display are simplified for fast, playable learning. 🌌</p>
     <button class="btn-close-modal" data-close>LET'S SMASH ⚛️</button>
+  </div>
+</div>
+
+<!-- ======= RESET CONFIRM MODAL ======= -->
+<div id="modal-reset" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-hidden="true" inert>
+  <div class="modal-card reset-card" tabindex="-1">
+    <h2 id="reset-title">🔄 START A NEW GAME?</h2>
+    <p>This clears the <b>Particle-Dex</b>, achievements, Science Points, and Higgs progress —
+       so you can chase the discoveries all over again, or hand the collider to a brand-new physicist.</p>
+    <p class="reset-warn">⚠️ This cannot be undone!</p>
+    <div class="reset-actions">
+      <button class="btn-close-modal" data-close>KEEP PLAYING</button>
+      <button class="btn-close-modal btn-danger" id="btn-reset-confirm">RESET EVERYTHING</button>
+    </div>
   </div>
 </div>
 

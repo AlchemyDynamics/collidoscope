@@ -455,6 +455,13 @@ input[type="range"]::-moz-range-thumb {
 
 /* profile card reuses discovery styles via JS-built innerHTML */
 
+/* reset confirm */
+.reset-card h2 { font-family: var(--font-display); font-size: 1.15rem; color: var(--cyan); margin-bottom: 14px; }
+.reset-card p { line-height: 1.5; margin-bottom: 12px; font-size: 0.95rem; }
+.reset-warn { color: #fca5a5; font-weight: 700; }
+.reset-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 6px; }
+.btn-danger { background: linear-gradient(135deg, #f87171, #f97316); color: #1a0505; }
+
 /* ================= TOASTS ================= */
 #toasts {
   position: fixed; top: 70px; right: 18px; z-index: 70;

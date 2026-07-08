@@ -40,16 +40,22 @@
 
   /* ---------------- save / load ---------------- */
   function save() {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      discovered: [...state.discovered],
-      seenCounts: state.seenCounts,
-      collisions: state.collisions,
-      score: state.score,
-      achievements: [...state.achievements],
-      higgsCandidates: state.higgsCandidates,
-      higgsDryFires: state.higgsDryFires,
-      higgsConfirmed: state.higgsConfirmed,
-    }));
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        discovered: [...state.discovered],
+        seenCounts: state.seenCounts,
+        collisions: state.collisions,
+        score: state.score,
+        achievements: [...state.achievements],
+        higgsCandidates: state.higgsCandidates,
+        higgsDryFires: state.higgsDryFires,
+        higgsConfirmed: state.higgsConfirmed,
+      }));
+      return true;
+    } catch (e) {
+      // private browsing / storage blocked — play on, just without persistence
+      return false;
+    }
   }
   function load() {
     try {
@@ -195,7 +201,6 @@
     if (ev.higgsEvent) {
       html += `<span class="rep-line rep-hot">⚠️ ANOMALY: excess photon pair near 125 GeV…</span>`;
     } else if (ev.featuredIds.length) {
-      const names = ev.featuredIds.map(id => PARTICLES[id].rarity).join('');
       if (ev.featuredIds.some(id => ['rare', 'epic'].includes(PARTICLES[id].rarity))) {
         html += `<span class="rep-line rep-hot">📡 Unusual signature in the data — investigate!</span>`;
       }
@@ -563,6 +568,20 @@
       $('btn-mute').setAttribute('aria-label', SFX.isMuted() ? 'Unmute sound' : 'Mute sound');
     });
     $('btn-cam-reset').addEventListener('click', () => { try { Detector3D.resetCamera(); } catch (e) {} });
+
+    // manual save (the game also autosaves after every event)
+    $('btn-save').addEventListener('click', () => {
+      SFX.click();
+      if (save()) toast('💾 <b>Progress saved!</b><small>your Particle-Dex is stored in this browser</small>');
+      else toast('⚠️ <b>Could not save</b><small>this browser is blocking storage (private mode?)</small>');
+    });
+
+    // new game — confirm, wipe the save, reload to the splash screen
+    $('btn-reset').addEventListener('click', () => { SFX.click(); openModal('modal-reset'); });
+    $('btn-reset-confirm').addEventListener('click', () => {
+      try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* nothing saved anyway */ }
+      location.reload();
+    });
     $('disco-close').addEventListener('click', () => { SFX.click(); closeModals(); });
 
     // detector fullscreen: CSS takeover, camera untouched so the view persists
@@ -617,7 +636,7 @@
         }
         closeModals();
       }
-      if (e.key === ' ' && !firing && document.activeElement.tagName !== 'INPUT' &&
+      if (e.key === ' ' && !firing && !$('splash') && document.activeElement.tagName !== 'INPUT' &&
           ![...document.querySelectorAll('.modal')].some(m => !m.classList.contains('hidden'))) {
         e.preventDefault(); fire();
       }
